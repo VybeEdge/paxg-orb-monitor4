@@ -1,55 +1,99 @@
 {
-  "last_bar_time": 1790406180,
-  "open_trades": [],
+  "last_bar_time": 1790647800,
+  "open_trades": [
+    {
+      "side": -1,
+      "entry": 4159.8,
+      "init_stop": 4216.075000000001,
+      "stop": 4216.075000000001,
+      "stop_dist": 56.27500000000031,
+      "atr1h": 16.078571428571518,
+      "mfe": 4120.9,
+      "tp": null,
+      "entry_time": "2026-09-28T11:50:00Z",
+      "entry_ts": 1790596200,
+      "had_alert": true
+    },
+    {
+      "side": -1,
+      "entry": 4157.69,
+      "init_stop": 4215.94,
+      "stop": 4215.94,
+      "stop_dist": 58.25000000000022,
+      "atr1h": 16.642857142857206,
+      "mfe": 4120.9,
+      "tp": null,
+      "entry_time": "2026-09-28T12:40:00Z",
+      "entry_ts": 1790599200,
+      "had_alert": false
+    },
+    {
+      "side": -1,
+      "entry": 4157.6,
+      "init_stop": 4215.85,
+      "stop": 4215.85,
+      "stop_dist": 58.25000000000022,
+      "atr1h": 16.642857142857206,
+      "mfe": 4120.9,
+      "tp": null,
+      "entry_time": "2026-09-28T12:44:00Z",
+      "entry_ts": 1790599440,
+      "had_alert": true
+    }
+  ],
   "tiers": {
     "100": {
-      "balance": 100.0,
-      "peak": 100.0,
+      "balance": 126.70814900932898,
+      "peak": 126.70814900932898,
       "max_dd_pct": 0.0,
-      "trades": 0,
-      "wins": 0,
+      "trades": 9,
+      "wins": 9,
       "losses": 0,
-      "fees": 0.0
+      "fees": 1.9783767431377015
     },
     "1000": {
-      "balance": 1000.0,
-      "peak": 1000.0,
+      "balance": 1267.0814900932899,
+      "peak": 1267.0814900932899,
       "max_dd_pct": 0.0,
-      "trades": 0,
-      "wins": 0,
+      "trades": 9,
+      "wins": 9,
       "losses": 0,
-      "fees": 0.0
+      "fees": 19.783767431377015
     },
     "10000": {
-      "balance": 10000.0,
-      "peak": 10000.0,
+      "balance": 12670.814900932894,
+      "peak": 12670.814900932894,
       "max_dd_pct": 0.0,
-      "trades": 0,
-      "wins": 0,
+      "trades": 9,
+      "wins": 9,
       "losses": 0,
-      "fees": 0.0
+      "fees": 197.83767431377012
     }
   },
-  "alerts_total": 0,
-  "alerts_followed": 0,
-  "alerts_not_followed": 0,
-  "trades_total": 0,
-  "trades_wins": 0,
+  "alerts_total": 4,
+  "alerts_followed": 2,
+  "alerts_not_followed": 2,
+  "trades_total": 9,
+  "trades_wins": 9,
   "trades_losses": 0,
-  "sum_R": 0.0,
+  "sum_R": 25.7599017504874,
   "trades_with_alert": 0,
   "wins_with_alert": 0,
-  "trades_without_alert": 0,
-  "wins_without_alert": 0,
-  "day": null,
+  "trades_without_alert": 9,
+  "wins_without_alert": 9,
+  "day": "2026-09-29",
   "trades_today": 0,
-  "session": null,
-  "range_high": null,
-  "range_low": null,
-  "day_atr": null,
-  "session_ema": null,
-  "range_ok": false,
+  "session": 124350,
+  "range_high": 4137.1,
+  "range_low": 4129.9,
+  "day_atr": 4.107142857142987,
+  "session_ema": 4234.95622768339,
+  "range_ok": true,
   "alerted_up": false,
   "alerted_dn": false,
-  "closes_before": []
+  "closes_before": [
+    4135.4,
+    4134.9,
+    4137.2
+  ]
 }
