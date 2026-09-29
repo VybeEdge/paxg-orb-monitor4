@@ -224,12 +224,16 @@ SUMMARY_FILE = "SUMMARY.md"
 TRADES_HEADER = (
     ["entry_time_utc", "side", "entry", "sl", "tp", "exit_time_utc", "exit", "result", "R", "had_alert"]
     + [f"{int(b)}_before" for b in BALANCES]
-    + [f"{int(b)}_pnl" for b in BALANCES]      # NET pnl (fee already subtracted) - after minus before
+    + [f"{int(b)}_gross_before" for b in BALANCES]  # the parallel no-cost-ever-charged balance track
+    + [f"{int(b)}_gross_pnl" for b in BALANCES]  # GROSS pnl - this trade's R applied to gross_before
+    + [f"{int(b)}_pnl" for b in BALANCES]      # NET pnl (cut already subtracted) - after minus before
     + [f"{int(b)}_after" for b in BALANCES]
-    + [f"{int(b)}_fee" for b in BALANCES]      # how much of that was Delta Exchange's est. fee, for transparency
+    + [f"{int(b)}_gross_after" for b in BALANCES]
+    + [f"{int(b)}_fee" for b in BALANCES]      # how much of that was the est. holding-time cut, for transparency
 )
 ALERTS_HEADER = ["event", "alert_id", "time_utc", "side", "price", "range_high", "range_low", "atr", "outcome"]
-PRICE_HEADER = ["time_utc", "close", "pct_return"] + [f"{int(b)}_balance" for b in BALANCES]
+PRICE_HEADER = (["time_utc", "close", "pct_return"] + [f"{int(b)}_balance" for b in BALANCES]
+                 + [f"{int(b)}_gross_balance" for b in BALANCES])
 
 
 def utc_iso(ts):
@@ -348,7 +352,12 @@ def utc_day_key(ts_utc):
 
 
 def default_tier():
-    return dict(balance=None, peak=None, max_dd_pct=0.0, trades=0, wins=0, losses=0, fees=0.0)
+    # gross_balance compounds the SAME trades (same R per trade) as if the
+    # holding-time cut were never charged - a parallel hypothetical, kept
+    # alongside the real (net) balance so gross vs net can be compared at
+    # the account level, not just per-trade.
+    return dict(balance=None, peak=None, max_dd_pct=0.0, trades=0, wins=0, losses=0, fees=0.0,
+                gross_balance=None)
 
 
 def default_day_state(day_key):
@@ -370,7 +379,7 @@ def load_state():
         with open(STATE_FILE) as f:
             return json.load(f)
     s = dict(last_bar_time=None, open_trades=[],
-              tiers={str(int(b)): {**default_tier(), "balance": b, "peak": b} for b in BALANCES},
+              tiers={str(int(b)): {**default_tier(), "balance": b, "peak": b, "gross_balance": b} for b in BALANCES},
               alerts_total=0, alerts_followed=0, alerts_not_followed=0,
               trades_total=0, trades_wins=0, trades_losses=0, sum_R=0.0,
               trades_with_alert=0, wins_with_alert=0, trades_without_alert=0, wins_without_alert=0)
@@ -409,22 +418,32 @@ def close_trade(state, ot, result, exit_px, exit_iso, exit_ts):
         if R > 0:
             state["wins_without_alert"] += 1
 
-    befores, pnls, afters, fees = [], [], [], []
+    befores, gross_befores, gross_pnls, pnls, afters, gross_afters, fees = [], [], [], [], [], [], []
     for b in BALANCES:
         key = str(int(b))
         tier = state["tiers"][key]
         before = tier["balance"]
         risk_dollars = before * (RISK_PERCENT / 100.0)
-        pnl_gross = R * risk_dollars
+        pnl_gross_actual = R * risk_dollars
         # fee = the user's own reported "cut" %, tiered by how long this
         # trade was actually held, applied to the dollar amount risked (see
         # the settings-block comment for why that basis was chosen). Charged
         # on every close, win or lose, same as a real trading cost would be.
         fee = risk_dollars * (cut_pct / 100.0)
-        pnl_net = pnl_gross - fee
+        pnl_net = pnl_gross_actual - fee
         after = max(0.0, before + pnl_net)
         tier["balance"] = after
         tier["fees"] += fee
+        # parallel hypothetical: same R, compounding on its OWN gross balance
+        # (1% of the gross track, not the net one) as if no cut were ever
+        # charged - logged per-trade too (gross_before/gross_pnl/gross_after)
+        # so the gross figures are self-consistent (gross_before + gross_pnl
+        # = gross_after) rather than mixing a gross P/L onto the net balance.
+        gross_before = tier["gross_balance"] if tier["gross_balance"] is not None else before
+        gross_risk_dollars = gross_before * (RISK_PERCENT / 100.0)
+        pnl_gross = R * gross_risk_dollars
+        gross_after = max(0.0, gross_before + pnl_gross)
+        tier["gross_balance"] = gross_after
         tier["peak"] = max(tier["peak"], after)
         dd = (after - tier["peak"]) / tier["peak"] * 100.0 if tier["peak"] > 0 else 0.0
         tier["max_dd_pct"] = min(tier["max_dd_pct"], dd)
@@ -434,8 +453,11 @@ def close_trade(state, ot, result, exit_px, exit_iso, exit_ts):
         else:
             tier["losses"] += 1
         befores.append(round(before, 2))
+        gross_befores.append(round(gross_before, 2))
+        gross_pnls.append(round(pnl_gross, 2))
         pnls.append(round(pnl_net, 2))
         afters.append(round(after, 2))
+        gross_afters.append(round(gross_after, 2))
         fees.append(round(fee, 4))
 
     log_line(f"PAPER TRADE CLOSED  {('BUY' if ot['side']==1 else 'SELL')} "
@@ -444,13 +466,13 @@ def close_trade(state, ot, result, exit_px, exit_iso, exit_ts):
              f"est. fee ${fees[0]:.4f} on the $100 tier)")
     # "sl" column = the ORIGINAL (never-moved) stop. "tp" is left blank -
     # there is no fixed target any more, the trailing stop above is where a
-    # profitable trade actually exits. "pnl"/"after" are NET of the fee
-    # above (see "fee" columns) - these numbers already include Delta
-    # Exchange's estimated trading costs, not a separate toggle.
+    # profitable trade actually exits. "gross_pnl" is BEFORE the cut; "pnl"/
+    # "after" are NET of it (see "fee" columns) - both are logged so the
+    # dashboard can show either, or both, per trade.
     append_csv(TRADES_LOG, TRADES_HEADER,
                [ot["entry_time"], "BUY" if ot["side"] == 1 else "SELL", ot["entry"], ot["init_stop"],
                 "", exit_iso, exit_px, result, round(R, 3), ot["had_alert"]]
-               + befores + pnls + afters + fees)
+               + befores + gross_befores + gross_pnls + pnls + afters + gross_afters + fees)
 
 
 def _finalize_unresolved_alerts(state, as_of_iso, last_price):
@@ -661,7 +683,8 @@ def process_bar(state, bar):
     pct_return = (base_tier["balance"] / base_bal0 - 1) * 100
     append_csv(PRICE_LOG, PRICE_HEADER,
                [utc_iso(bar["time"]), c, round(pct_return, 4)]
-               + [round(state["tiers"][str(int(b))]["balance"], 2) for b in BALANCES])
+               + [round(state["tiers"][str(int(b))]["balance"], 2) for b in BALANCES]
+               + [round(state["tiers"][str(int(b))]["gross_balance"], 2) for b in BALANCES])
 
 
 def write_summary(state):
@@ -712,13 +735,18 @@ def write_summary(state):
         lines.append(f"- Trades WITHOUT a prior alert: {twoa}, win rate {wwoa/twoa*100:.1f}%\n")
 
     lines.append("\n## Simulated account balances (1% risk per trade, compounding)\n")
-    lines.append("| Starting balance | Current balance | Return | Max drawdown | Trades | Win rate |\n")
-    lines.append("|---|---|---|---|---|---|\n")
+    lines.append("Gross = same trades, as if no cut were ever charged. Net = what actually happened, "
+                  "cut deducted every close - the real number.\n\n")
+    lines.append("| Starting balance | Gross balance | Gross return | Net balance | Net return | "
+                  "Max drawdown | Trades | Win rate |\n")
+    lines.append("|---|---|---|---|---|---|---|---|\n")
     for b in BALANCES:
         tier = state["tiers"][str(int(b))]
         ret_pct = (tier["balance"] / b - 1) * 100
+        gross_ret_pct = (tier["gross_balance"] / b - 1) * 100
         wr = (tier["wins"] / tier["trades"] * 100) if tier["trades"] else 0.0
-        lines.append(f"| ${b:,.0f} | ${tier['balance']:,.2f} | {ret_pct:+.2f}% | "
+        lines.append(f"| ${b:,.0f} | ${tier['gross_balance']:,.2f} | {gross_ret_pct:+.2f}% | "
+                      f"${tier['balance']:,.2f} | {ret_pct:+.2f}% | "
                       f"{tier['max_dd_pct']:.2f}% | {tier['trades']} | {wr:.1f}% |\n")
 
     with open(SUMMARY_FILE, "w", encoding="utf-8") as f:

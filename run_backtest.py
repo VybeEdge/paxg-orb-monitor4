@@ -146,7 +146,7 @@ def build_ema_lookup(df, period=None):
 
 def fresh_state(last_bar_time=None):
     s = dict(last_bar_time=last_bar_time, open_trades=[],
-             tiers={str(int(b)): {**doa.default_tier(), "balance": b, "peak": b} for b in doa.BALANCES},
+             tiers={str(int(b)): {**doa.default_tier(), "balance": b, "peak": b, "gross_balance": b} for b in doa.BALANCES},
              alerts_total=0, alerts_followed=0, alerts_not_followed=0,
              trades_total=0, trades_wins=0, trades_losses=0, sum_R=0.0,
              trades_with_alert=0, wins_with_alert=0, trades_without_alert=0, wins_without_alert=0)

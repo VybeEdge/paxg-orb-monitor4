@@ -166,7 +166,8 @@ header{display:flex;justify-content:space-between;align-items:flex-start;gap:16p
   background:var(--surface-1);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);
   padding:7px 10px;font-family:"JetBrains Mono",monospace;font-size:13px;
 }
-.fee-toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-secondary);user-select:none;}
+.fee-toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text-secondary);user-select:none;cursor:pointer;}
+.fee-toggle input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;margin:0;}
 .fee-toggle .hint{
   display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;
   background:var(--surface-1);border:1px solid var(--border);color:var(--text-muted);font-size:10.5px;font-weight:700;
@@ -335,8 +336,9 @@ footer a{color:var(--text-secondary);}
         <span>account</span>
       </div>
       <label class="fee-toggle" id="feeToggleLabel">
-        <span>Fees included by default</span>
-        <span class="hint" title="Every number on this page - live balances, backtest returns, per-trade P/L - already has Delta Exchange India's estimated round-trip cost (0.05% taker in + 0.05% taker out, plus 18% GST on the fee itself, ~0.118% of position notional per trade) subtracted at the source, trade by trade, compounding. This isn't an optional estimate layered on top: the strategy's own return figures are fee-net from the start, because position size is leveraged to risk only 1% of balance against a stop, so the fee - charged on the full notional, not just the risked 1% - is a real, material cost. Excludes funding-rate charges (no historical funding data available) and any taxes, which depend on your personal situation.">?</span>
+        <input type="checkbox" id="grossToggle">
+        <span>Show gross (before cut)</span>
+        <span class="hint" title="Net (unchecked, the default) is what actually happened: every number here - live balances, backtest returns, per-trade P/L - already has the holding-time-tiered cost (9% under 2h, 15% 2-8h, 25% 8h+, of the dollar amount risked per trade) subtracted at the source, trade by trade, compounding. Check this box to instead see Gross: the same trades, same win/loss, as if that cost were never charged - so you can see exactly how much the cost is costing you. Excludes taxes, which depend on your personal situation.">?</span>
       </label>
     </section>
 
@@ -492,6 +494,7 @@ footer a{color:var(--text-secondary);}
     liveBadge: document.getElementById("liveBadge"),
     repoLink: document.getElementById("repoLink"),
     tiles: document.getElementById("tiles"),
+    grossToggle: document.getElementById("grossToggle"),
     tradesPnlHeader: document.getElementById("tradesPnlHeader"),
     btTradesPnlHeader: document.getElementById("btTradesPnlHeader"),
     rangeSeg: document.getElementById("rangeSeg"),
@@ -537,21 +540,21 @@ footer a{color:var(--text-secondary);}
 
   var state = {
     range:"1M", tier:"1000", price:[], trades:[], alerts:[],
-    btPrice:[], btTrades:[], btAlerts:[], btRangeSet:false,
+    btPrice:[], btTrades:[], btAlerts:[], btRangeSet:false, showGross:false,
     pages: { trades:1, alerts:1, btTrades:1, btAlerts:1 }
   };
 
-  // ---------------- brokerage / fee estimate (Delta Exchange India) ----------------
-  // Fees are NOT computed here any more - they're baked into the source data
-  // itself. delta_orb_action.py's close_trade() deducts the same estimated
-  // round-trip cost (0.05% taker in + 0.05% taker out, plus 18% GST on the
-  // fee itself, ~0.118% of position notional) from every tier's balance at
-  // the moment each trade closes, compounding trade by trade, floored at $0.
-  // So price_and_equity.csv's pct_return, and every trade row's "*_pnl"/
-  // "*_after" column, are already fee-net at the source - this dashboard just
-  // displays them as-is rather than re-deriving a fee estimate client-side
-  // (an earlier version did that as an optional toggle, before the engine
-  // itself accounted for fees; keeping both would double up the estimate).
+  // ---------------- gross vs net cut (holding-time-tiered) ----------------
+  // The cost is NOT computed here - it's baked into the source data itself.
+  // delta_orb_action.py's close_trade() deducts a holding-time-tiered cut
+  // (9% under 2h, 15% 2-8h, 25% 8h+, of the dollar amount risked) from every
+  // tier's balance at the moment each trade closes, compounding trade by
+  // trade, floored at $0. It ALSO tracks a parallel "gross" balance per tier
+  // - the same trades, same R, as if that cut were never charged - so this
+  // dashboard can show either without re-deriving anything client-side.
+  // pct_return/*_balance columns are the real NET numbers (state.showGross
+  // false, the default); *_gross_balance and each trade's *_gross_pnl are
+  // the GROSS ones (state.showGross true, via the "Show gross" checkbox).
 
   function showSetup(){ els.setupCard.hidden = false; els.mainContent.hidden = true; }
   function showMain(){ els.setupCard.hidden = true; els.mainContent.hidden = false; }
@@ -604,12 +607,14 @@ footer a{color:var(--text-secondary);}
       fetchText(rawUrl("backtest_alerts.csv"))
     ]).then(function(res){
       state.price  = res[0] ? parseCSV(res[0]).map(function(r){
-        return { t: new Date(r.time_utc), close: num(r.close), pct: num(r.pct_return) };
+        return { t: new Date(r.time_utc), close: num(r.close), pct: num(r.pct_return),
+                 gpct: (num(r["100_gross_balance"])/100 - 1) * 100 };
       }) : [];
       state.trades = res[1] ? parseCSV(res[1]).map(function(r){ r._entry = new Date(r.entry_time_utc); r._exit = new Date(r.exit_time_utc); return r; }) : [];
       state.alerts = res[2] ? parseCSV(res[2]) : [];
       state.btPrice  = res[3] ? parseCSV(res[3]).map(function(r){
-        return { t: new Date(r.time_utc), close: num(r.close), pct: num(r.pct_return) };
+        return { t: new Date(r.time_utc), close: num(r.close), pct: num(r.pct_return),
+                 gpct: (num(r["100_gross_balance"])/100 - 1) * 100 };
       }) : [];
       state.btTrades = res[4] ? parseCSV(res[4]).map(function(r){ r._entry = new Date(r.entry_time_utc); r._exit = new Date(r.exit_time_utc); return r; }) : [];
       state.btAlerts = res[5] ? parseCSV(res[5]) : [];
@@ -671,11 +676,12 @@ footer a{color:var(--text-secondary);}
 
   // ---------------- stat tiles ----------------
   function computeTierStats(bal0){
-    // pct_return is the same cumulative % for every account size (see PRICE_HEADER),
-    // already fee-net at the source (see the comment above) - apply it to this
-    // tier's starting balance rather than reading a raw $ column (those aren't
-    // kept on state.price rows; see loadData()).
-    var lastPct = state.price.length ? state.price[state.price.length-1].pct : null;
+    // pct_return (net) / gpct (gross) are the same cumulative % for every
+    // account size (see PRICE_HEADER) - apply it to this tier's starting
+    // balance rather than reading a raw $ column (those aren't kept on
+    // state.price rows; see loadData()). state.showGross picks which.
+    var last = state.price.length ? state.price[state.price.length-1] : null;
+    var lastPct = last ? (state.showGross ? last.gpct : last.pct) : null;
     var ret = lastPct == null ? 0 : lastPct;
     var balance = bal0 * (1 + ret/100);
     // "blown" = effectively wiped out (the engine floors balance at $0, so a
@@ -703,10 +709,12 @@ footer a{color:var(--text-secondary);}
     var html = "";
     [100,1000,10000].forEach(function(b,i){
       var s = tiers[i];
-      html += '<div class="tile"><div class="label">$'+b.toLocaleString()+' account</div>' +
+      var subText = s.blown ? "⚠ depleted by the cut"
+        : (state.showGross ? "gross - cut NOT deducted" : "net of est. cut, compounding");
+      html += '<div class="tile"><div class="label">$'+b.toLocaleString()+' account'+(state.showGross?' (gross)':'')+'</div>' +
         '<div class="value mono">'+money(s.balance)+'</div>' +
         '<div class="delta '+(s.ret>=0?"up":"down")+'">'+(s.ret>=0?"▲":"▼")+' '+pct(s.ret)+' all-time</div>' +
-        '<div class="sub'+(s.blown?" warn":"")+'">'+(s.blown?"⚠ depleted by fees":"net of est. fees, compounding")+'</div></div>';
+        '<div class="sub'+(s.blown?" warn":"")+'">'+subText+'</div></div>';
     });
     html += '<div class="tile"><div class="label">Win rate</div><div class="value mono">'+(tt?wr.toFixed(1):"-")+'%</div><div class="sub">'+tt+' trades taken</div></div>';
     html += '<div class="tile"><div class="label">Profit factor</div><div class="value mono">'+(pf===Infinity?"∞":(tt?pf.toFixed(2):"-"))+'</div><div class="sub">gross win ÷ gross loss</div></div>';
@@ -824,7 +832,7 @@ footer a{color:var(--text-secondary);}
     var fp = filteredPrice();
     if (fp.length){
       els.priceNow.textContent = "$" + fp[fp.length-1].close.toFixed(2);
-      els.equityNow.textContent = pct(fp[fp.length-1].pct);
+      els.equityNow.textContent = pct(state.showGross ? fp[fp.length-1].gpct : fp[fp.length-1].pct);
     }
     var cutoff = fp.length ? fp[0].t.getTime() : 0;
     var lastT = fp.length ? fp[fp.length-1].t.getTime() : Infinity;
@@ -858,11 +866,11 @@ footer a{color:var(--text-secondary);}
         xFmt:xFmt, xFull:xFull });
     renderChartStats(els.priceStats, fp.map(function(p){ return {v:p.close}; }), false);
 
-    var equitySeries = fp.map(function(p){ return {t:p.t, v:p.pct}; });
+    var equitySeries = fp.map(function(p){ return {t:p.t, v: state.showGross ? p.gpct : p.pct}; });
     buildChart(els.equityWrap,
       equitySeries,
       [],
-      { id:"equity", lineColor:"var(--gold)", label:"Return",
+      { id:"equity", lineColor:"var(--gold)", label: state.showGross ? "Return (gross)" : "Return (net)",
         yFmt:function(v){ return pct(v,1); },
         xFmt:xFmt, xFull:xFull });
     renderChartStats(els.equityStats, equitySeries.map(function(p){ return {v:p.v}; }), true);
@@ -904,9 +912,11 @@ footer a{color:var(--text-secondary);}
     var html = "";
     pageRows.forEach(function(t){
       var R = num(t.R), win = R>0;
-      var pnlKey = tierKey+"_pnl", beforeKey = tierKey+"_before";
-      // pnl is already net of the estimated fee (see the _fee column) - the
+      var pnlKey = tierKey+(state.showGross?"_gross_pnl":"_pnl"), beforeKey = tierKey+(state.showGross?"_gross_before":"_before");
+      // pnl is already net of the estimated cut (see the _fee column) - the
       // engine deducts it at the source, so it's not re-subtracted here.
+      // showGross switches to the parallel gross_pnl/gross_before columns
+      // (same trade, same R, as if the cut were never charged).
       var pnl = num(t[pnlKey]), before = num(t[beforeKey]);
       var pnlPct = before ? (pnl/before*100) : 0;
       html += '<tr>' +
@@ -1039,18 +1049,19 @@ footer a{color:var(--text-secondary);}
 
     els.btSpan.textContent = fmtUTC(start) + " UTC  →  " + fmtUTC(end) + " UTC";
 
-    // range return: pct_return is already a fee-net, continuously compounding
-    // series (see the comment near computeTierStats) relative to the very
-    // start of the whole backtest - so the return over just this window is
-    // the ratio of (1+end%) to (1+start%), not a plain subtraction of the two
-    // percentages (which would ignore compounding). No separate re-simulation
-    // needed, and nothing outside the window bleeds in.
+    // range return: pct_return (net) / gpct (gross) is already a continuously
+    // compounding series (see the comment near computeTierStats) relative to
+    // the very start of the whole backtest - so the return over just this
+    // window is the ratio of (1+end%) to (1+start%), not a plain subtraction
+    // of the two percentages (which would ignore compounding). No separate
+    // re-simulation needed, and nothing outside the window bleeds in.
+    var pctField = state.showGross ? "gpct" : "pct";
     var rangeRet = 0;
     if (fp.length){
-      var startFactor = 1 + fp[0].pct/100, endFactor = 1 + fp[fp.length-1].pct/100;
+      var startFactor = 1 + fp[0][pctField]/100, endFactor = 1 + fp[fp.length-1][pctField]/100;
       rangeRet = startFactor ? (endFactor/startFactor - 1)*100 : 0;
     }
-    var rangeBlown = fp.length && (fp[fp.length-1].pct <= -99.9);
+    var rangeBlown = fp.length && !state.showGross && (fp[fp.length-1][pctField] <= -99.9);
 
     if (fp.length){
       els.btPriceNow.textContent = "$" + fp[fp.length-1].close.toFixed(2);
@@ -1090,11 +1101,12 @@ footer a{color:var(--text-secondary);}
       { id:"btprice", lineColor:"var(--accent)", label:"Price", yFmt:function(v){ return "$"+v.toFixed(2); }, xFmt:xFmt, xFull:xFull });
     renderChartStats(els.btPriceStats, fp.map(function(p){ return {v:p.close}; }), false);
 
-    var btEquitySeries = plotSeries.map(function(p){ return {t:p.t, v:p.pct}; });
+    var btEquitySeries = plotSeries.map(function(p){ return {t:p.t, v:p[pctField]}; });
     buildChart(els.btEquityWrap,
       btEquitySeries,
       [],
-      { id:"btequity", lineColor:"var(--gold)", label:"Return", yFmt:function(v){ return pct(v,1); }, xFmt:xFmt, xFull:xFull });
+      { id:"btequity", lineColor:"var(--gold)", label: state.showGross ? "Return (gross)" : "Return (net)",
+        yFmt:function(v){ return pct(v,1); }, xFmt:xFmt, xFull:xFull });
     renderChartStats(els.btEquityStats, btEquitySeries.map(function(p){ return {v:p.v}; }), true);
 
     // stat tiles for the selected range
@@ -1112,7 +1124,7 @@ footer a{color:var(--text-secondary);}
     var followRate = resolved ? (followed/resolved*100) : 0;
 
     els.btTiles.innerHTML =
-      '<div class="tile"><div class="label">Range return</div><div class="value mono">'+pct(rangeRet,1)+'</div><div class="sub'+(rangeBlown?" warn":"")+'">'+(rangeBlown?"⚠ depleted by fees in this range":"net of est. fees, 1% risk per trade, compounding")+'</div></div>' +
+      '<div class="tile"><div class="label">Range return'+(state.showGross?' (gross)':'')+'</div><div class="value mono">'+pct(rangeRet,1)+'</div><div class="sub'+(rangeBlown?" warn":"")+'">'+(rangeBlown?"⚠ depleted by the cut in this range":(state.showGross?"gross - cut NOT deducted":"net of est. cut, 1% risk per trade, compounding"))+'</div></div>' +
       '<div class="tile"><div class="label">Trades taken</div><div class="value mono">'+tt+'</div><div class="sub">in the selected window</div></div>' +
       '<div class="tile"><div class="label">Win rate</div><div class="value mono">'+(tt?wr.toFixed(1):"-")+'%</div><div class="sub">'+tw+' wins / '+(tt-tw)+' losses</div></div>' +
       '<div class="tile"><div class="label">Profit factor</div><div class="value mono">'+(pf===Infinity?"∞":(tt?pf.toFixed(2):"-"))+'</div><div class="sub">gross win ÷ gross loss</div></div>' +
@@ -1123,7 +1135,7 @@ footer a{color:var(--text-secondary);}
   }
 
   function renderAll(){
-    var pnlLabel = "P/L $ (net)";
+    var pnlLabel = state.showGross ? "P/L $ (gross)" : "P/L $ (net)";
     els.tradesPnlHeader.textContent = pnlLabel;
     els.btTradesPnlHeader.textContent = pnlLabel;
     renderTiles();
@@ -1134,6 +1146,10 @@ footer a{color:var(--text-secondary);}
   }
 
   // ---------------- controls ----------------
+  els.grossToggle.addEventListener("change", function(){
+    state.showGross = els.grossToggle.checked;
+    renderAll();
+  });
   els.rangeSeg.addEventListener("click", function(e){
     var btn = e.target.closest("button");
     if (!btn) return;

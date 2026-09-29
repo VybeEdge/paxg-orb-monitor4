@@ -1,5 +1,5 @@
 # PAXGUSD ORB - live forward-test summary
-Last updated: 2026-09-28 16:35:02 UTC
+Last updated: 2026-09-29 03:55:46 UTC
 **Walk-forward validated on PAXGUSD's own 7+ month history (70/30 train/test split): trend-following breakout entry with a chandelier trailing stop, up to 3 trades open at once. A holding-time-tiered trading cost is deducted from every trade at close (not a toggle) - 9% under 2h, 15% 2-8h, 25% 8h+, of the dollar amount risked - train +24.6% CAGR, test +39.7% CAGR, both net of that cost (max drawdown -17% to -27%, higher than a single-trade design since concurrent trades on the same instrument are correlated, not diversified). Paper trading only, no real money involved. Checked on a schedule (see workflow) - notification lag applies.**
 
 **Tax note:** figures below are PRE-TAX. PAXGUSD here is a futures contract, not a spot crypto buy/sell, so per Delta Exchange's own guidance the flat 30% VDA tax + 1% TDS does NOT apply - F&O profit is taxed as regular income at your own income-tax slab rate instead, paid separately (via ITR), not deducted per trade. Not tax advice - consult a CA for your actual liability.
@@ -18,8 +18,10 @@ Last updated: 2026-09-28 16:35:02 UTC
 - Trades WITHOUT a prior alert: 133, win rate 34.6%
 
 ## Simulated account balances (1% risk per trade, compounding)
-| Starting balance | Current balance | Return | Max drawdown | Trades | Win rate |
-|---|---|---|---|---|---|
-| $100 | $116.52 | +16.52% | -26.61% | 146 | 34.2% |
-| $1,000 | $1,165.23 | +16.52% | -26.61% | 146 | 34.2% |
-| $10,000 | $11,652.25 | +16.52% | -26.61% | 146 | 34.2% |
+Gross = same trades, as if no cut were ever charged. Net = what actually happened, cut deducted every close - the real number.
+
+| Starting balance | Gross balance | Gross return | Net balance | Net return | Max drawdown | Trades | Win rate |
+|---|---|---|---|---|---|---|---|
+| $100 | $161.38 | +61.38% | $116.52 | +16.52% | -26.61% | 146 | 34.2% |
+| $1,000 | $1,613.82 | +61.38% | $1,165.23 | +16.52% | -26.61% | 146 | 34.2% |
+| $10,000 | $16,138.24 | +61.38% | $11,652.25 | +16.52% | -26.61% | 146 | 34.2% |
