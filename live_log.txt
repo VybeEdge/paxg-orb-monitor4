@@ -112,3 +112,9 @@
 [2026-10-01 21:59:01 UTC] Session 124367 range set: 4183.69-4186.50 (ATR15 7.642857142857208, EMA100(1h) 4189.92322434835) -> active
 [2026-10-02 01:34:43 UTC] Session 124368 range set: 4177.60-4189.30 (ATR15 3.230000000000018, EMA100(1h) 4189.182020737305) -> active
 [2026-10-02 04:45:00 UTC] Session 124369 range set: 4184.40-4193.50 (ATR15 8.192857142857, EMA100(1h) 4188.335324648975) -> active
+[2026-10-02 14:05:17 UTC] Session 124370 range set: 4183.80-4196.60 (ATR15 7.778571428571403, EMA100(1h) 4188.243520181386) -> active
+[2026-10-02 14:05:17 UTC] Session 124371 range set: 4176.70-4183.50 (ATR15 6.849999999999974, EMA100(1h) 4188.591121758921) -> active
+[2026-10-02 14:05:17 UTC] PAPER TRADE CLOSED  SELL entry 4165.90 -> exit 4224.52  result=SL  R=-1.00  (had_alert=False, held 45.4h -> 25% cut, est. fee $0.2946 on the $100 tier)
+[2026-10-02 14:05:17 UTC] PAPER TRADE CLOSED  SELL entry 4167.00 -> exit 4225.62  result=SL  R=-1.00  (had_alert=False, held 45.3h -> 25% cut, est. fee $0.2910 on the $100 tier)
+[2026-10-02 14:05:17 UTC] >>> BUY SIGNAL  entry~4218.40  initial stop 4158.25  (1h ATR 17.19, trailing - no fixed target, had_alert=False, trade #1 today)
+[2026-10-02 14:05:17 UTC] >>> BUY SIGNAL  entry~4220.50  initial stop 4160.35  (1h ATR 17.19, trailing - no fixed target, had_alert=False, trade #2 today)
