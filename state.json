@@ -1,5 +1,5 @@
 {
-  "last_bar_time": 1792253940,
+  "last_bar_time": 1792262220,
   "open_trades": [
     {
       "side": -1,
@@ -95,8 +95,8 @@
   "alerted_up": false,
   "alerted_dn": false,
   "closes_before": [
-    4154.6,
-    4154.6,
-    4154.5
+    4156.5,
+    4156.8,
+    4156.7
   ]
 }
