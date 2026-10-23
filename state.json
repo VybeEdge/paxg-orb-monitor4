@@ -1,5 +1,5 @@
 {
-  "last_bar_time": 1792717020,
+  "last_bar_time": 1792734900,
   "open_trades": [
     {
       "side": -1,
@@ -8,7 +8,7 @@
       "stop": 4228.995,
       "stop_dist": 57.99499999999989,
       "atr1h": 16.56999999999997,
-      "mfe": 4028.8,
+      "mfe": 4002.4,
       "tp": null,
       "entry_time": "2026-09-30T14:37:00Z",
       "entry_ts": 1790779020,
@@ -21,7 +21,7 @@
       "stop": 4233.275,
       "stop_dist": 72.07499999999982,
       "atr1h": 20.592857142857092,
-      "mfe": 4028.8,
+      "mfe": 4002.4,
       "tp": null,
       "entry_time": "2026-10-02T14:55:00Z",
       "entry_ts": 1790952900,
@@ -34,7 +34,7 @@
       "stop": 4232.849999999999,
       "stop_dist": 74.64999999999986,
       "atr1h": 21.32857142857139,
-      "mfe": 4028.8,
+      "mfe": 4002.4,
       "tp": null,
       "entry_time": "2026-10-02T15:02:00Z",
       "entry_ts": 1790953320,
@@ -86,17 +86,17 @@
   "wins_without_alert": 9,
   "day": "2026-10-23",
   "trades_today": 0,
-  "session": 124494,
-  "range_high": 4039.0,
-  "range_low": 4033.2,
-  "day_atr": 3.271428571428552,
-  "session_ema": 4113.013218321259,
+  "session": 124495,
+  "range_high": 4030.2,
+  "range_low": 4023.2,
+  "day_atr": 10.692857142857097,
+  "session_ema": 4105.981753978272,
   "range_ok": true,
   "alerted_up": false,
   "alerted_dn": false,
   "closes_before": [
-    4040.4,
-    4042.7,
-    4043.8
+    4035.1,
+    4035.5,
+    4033.9
   ]
 }
