@@ -1,5 +1,5 @@
 {
-  "last_bar_time": 1794103860,
+  "last_bar_time": 1794128580,
   "open_trades": [
     {
       "side": 1,
@@ -86,17 +86,17 @@
   "wins_without_alert": 14,
   "day": "2026-11-08",
   "trades_today": 0,
-  "session": 124590,
-  "range_high": 4061.9,
-  "range_low": 4059.0,
-  "day_atr": 0.9928571428571169,
-  "session_ema": 4044.013827964332,
+  "session": 124592,
+  "range_high": 4056.8,
+  "range_low": 4056.1,
+  "day_atr": 0.849999999999974,
+  "session_ema": 4045.9956080181464,
   "range_ok": true,
   "alerted_up": false,
   "alerted_dn": false,
   "closes_before": [
-    4059.6,
-    4058.7,
-    4058.6
+    4056.4,
+    4056.4,
+    4056.4
   ]
 }
