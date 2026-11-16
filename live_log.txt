@@ -429,3 +429,15 @@
 [2026-11-15 21:16:20 UTC] PAPER TRADE CLOSED  SELL entry 3809.40 -> exit 3840.08  result=SL  R=-1.00  (had_alert=False, held 27.1h -> 25% cut, est. fee $0.3079 on the $100 tier)
 [2026-11-15 21:16:21 UTC] Session 124637 range set: 3840.20-3842.70 (ATR15 4.707142857142799, EMA100(1h) 3882.0711793657892) -> active
 [2026-11-15 21:16:21 UTC] 🔔 ALERT FIRED - WATCH BUY  approaching 3842.70  [alert_id=124637-UP]
+[2026-11-16 01:08:24 UTC] >>> SELL SIGNAL  entry~3840.00  initial stop 3872.10  (1h ATR 9.17, trailing - no fixed target, had_alert=False, trade #1 today)
+[2026-11-16 01:08:24 UTC] PAPER TRADE CLOSED  SELL entry 3823.00 -> exit 3853.68  result=SL  R=-1.00  (had_alert=False, held 31.4h -> 25% cut, est. fee $0.3041 on the $100 tier)
+[2026-11-16 01:08:24 UTC] PAPER TRADE CLOSED  SELL entry 3828.90 -> exit 3859.58  result=SL  R=-1.00  (had_alert=False, held 31.3h -> 25% cut, est. fee $0.3003 on the $100 tier)
+[2026-11-16 01:08:24 UTC] PAPER TRADE CLOSED  SELL entry 3840.00 -> exit 3872.10  result=SL  R=-1.00  (had_alert=False, held 1.7h -> 9% cut, est. fee $0.1067 on the $100 tier)
+[2026-11-16 01:08:24 UTC] >>> BUY SIGNAL  entry~3884.10  initial stop 3845.82  (1h ATR 10.94, trailing - no fixed target, had_alert=True, trade #2 today)
+[2026-11-16 01:08:24 UTC] >>> BUY SIGNAL  entry~3886.40  initial stop 3848.12  (1h ATR 10.94, trailing - no fixed target, had_alert=False, trade #3 today)
+[2026-11-16 01:08:24 UTC] >>> BUY SIGNAL  entry~3886.40  initial stop 3848.12  (1h ATR 10.94, trailing - no fixed target, had_alert=False, trade #4 today)
+[2026-11-16 01:08:25 UTC] Session 124638 range set: 3876.30-3886.50 (ATR15 8.328571428571356, EMA100(1h) 3880.6874640733913) -> active
+[2026-11-16 01:08:25 UTC] PAPER TRADE CLOSED  BUY entry 3886.40 -> exit 3848.12  result=SL  R=-1.00  (had_alert=False, held 1.2h -> 9% cut, est. fee $0.1056 on the $100 tier)
+[2026-11-16 01:08:25 UTC] PAPER TRADE CLOSED  BUY entry 3886.40 -> exit 3848.12  result=SL  R=-1.00  (had_alert=False, held 1.2h -> 9% cut, est. fee $0.1044 on the $100 tier)
+[2026-11-16 01:08:25 UTC] >>> SELL SIGNAL  entry~3853.80  initial stop 3900.72  (1h ATR 13.41, trailing - no fixed target, had_alert=False, trade #1 today)
+[2026-11-16 01:08:25 UTC] >>> SELL SIGNAL  entry~3853.10  initial stop 3900.02  (1h ATR 13.41, trailing - no fixed target, had_alert=False, trade #2 today)
