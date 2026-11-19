@@ -466,3 +466,6 @@
 [2026-11-19 07:42:54 UTC] >>> SELL SIGNAL  entry~3707.30  initial stop 3775.43  (1h ATR 19.46, trailing - no fixed target, had_alert=False, trade #1 today)
 [2026-11-19 07:42:54 UTC] >>> SELL SIGNAL  entry~3703.80  initial stop 3771.93  (1h ATR 19.46, trailing - no fixed target, had_alert=False, trade #2 today)
 [2026-11-19 07:42:55 UTC] Session 124657 range set: 3714.10-3721.30 (ATR15 12.585714285714273, EMA100(1h) 3811.697927606908) -> active
+[2026-11-19 16:49:48 UTC] Session 124658 range set: 3724.40-3733.60 (ATR15 8.578571428571422, EMA100(1h) 3805.3007800082682) -> active
+[2026-11-19 16:49:49 UTC] Session 124659 range set: 3708.20-3713.90 (ATR15 7.114285714285708, EMA100(1h) 3798.592789366363) -> active
+[2026-11-19 16:49:49 UTC] Session 124660 range set: 3664.30-3674.80 (ATR15 11.335714285714273, EMA100(1h) 3790.239841284796) -> active
