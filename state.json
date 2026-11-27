@@ -1,5 +1,5 @@
 {
-  "last_bar_time": 1795734420,
+  "last_bar_time": 1795755600,
   "open_trades": [
     {
       "side": -1,
@@ -15,88 +15,88 @@
       "had_alert": false
     },
     {
-      "side": -1,
-      "entry": 3552.8,
-      "init_stop": 3620.475,
-      "stop": 3620.475,
-      "stop_dist": 67.67499999999984,
-      "atr1h": 19.33571428571424,
-      "mfe": 3422.8,
+      "side": 1,
+      "entry": 3606.3,
+      "init_stop": 3559.7875000000004,
+      "stop": 3559.7875000000004,
+      "stop_dist": 46.51249999999993,
+      "atr1h": 13.289285714285695,
+      "mfe": 3628.7,
       "tp": null,
-      "entry_time": "2026-11-24T18:21:00Z",
-      "entry_ts": 1795544460,
-      "had_alert": true
+      "entry_time": "2026-11-27T02:07:00Z",
+      "entry_ts": 1795745220,
+      "had_alert": false
     },
     {
-      "side": -1,
-      "entry": 3540.0,
-      "init_stop": 3605.475,
-      "stop": 3605.475,
-      "stop_dist": 65.47499999999991,
-      "atr1h": 18.70714285714283,
-      "mfe": 3422.8,
+      "side": 1,
+      "entry": 3624.3,
+      "init_stop": 3577.7875000000004,
+      "stop": 3577.7875000000004,
+      "stop_dist": 46.51249999999993,
+      "atr1h": 13.289285714285695,
+      "mfe": 3628.7,
       "tp": null,
-      "entry_time": "2026-11-24T20:38:00Z",
-      "entry_ts": 1795552680,
-      "had_alert": true
+      "entry_time": "2026-11-27T02:34:00Z",
+      "entry_ts": 1795746840,
+      "had_alert": false
     }
   ],
   "tiers": {
     "100": {
-      "balance": 119.43832460313554,
+      "balance": 116.4710287262764,
       "peak": 130.22095473760442,
       "max_dd_pct": -11.372420244314352,
-      "trades": 56,
+      "trades": 58,
       "wins": 22,
-      "losses": 34,
-      "fees": 14.589919351485806,
-      "gross_balance": 134.96623530407155
+      "losses": 36,
+      "fees": 15.183378526857636,
+      "gross_balance": 132.28040722152053
     },
     "1000": {
-      "balance": 1194.3832460313556,
+      "balance": 1164.710287262764,
       "peak": 1302.2095473760442,
       "max_dd_pct": -11.372420244314364,
-      "trades": 56,
+      "trades": 58,
       "wins": 22,
-      "losses": 34,
-      "fees": 145.89919351485813,
-      "gross_balance": 1349.6623530407157
+      "losses": 36,
+      "fees": 151.8337852685764,
+      "gross_balance": 1322.8040722152057
     },
     "10000": {
-      "balance": 11943.832460313546,
+      "balance": 11647.10287262763,
       "peak": 13022.095473760433,
       "max_dd_pct": -11.372420244314355,
-      "trades": 56,
+      "trades": 58,
       "wins": 22,
-      "losses": 34,
-      "fees": 1458.9919351485805,
-      "gross_balance": 13496.623530407163
+      "losses": 36,
+      "fees": 1518.3378526857634,
+      "gross_balance": 13228.040722152062
     }
   },
   "alerts_total": 13,
   "alerts_followed": 9,
   "alerts_not_followed": 4,
-  "trades_total": 56,
+  "trades_total": 58,
   "trades_wins": 22,
-  "trades_losses": 34,
-  "sum_R": 31.115278397660465,
-  "trades_with_alert": 7,
+  "trades_losses": 36,
+  "sum_R": 29.115278397660465,
+  "trades_with_alert": 9,
   "wins_with_alert": 0,
   "trades_without_alert": 49,
   "wins_without_alert": 22,
-  "day": "2026-11-26",
-  "trades_today": 0,
-  "session": 124703,
-  "range_high": 3563.4,
-  "range_low": 3562.4,
-  "day_atr": 2.379999999999979,
-  "session_ema": 3569.629804780338,
+  "day": "2026-11-27",
+  "trades_today": 2,
+  "session": 124705,
+  "range_high": 3622.8,
+  "range_low": 3618.2,
+  "day_atr": 12.282857142857242,
+  "session_ema": 3572.0878349141817,
   "range_ok": true,
   "alerted_up": false,
   "alerted_dn": false,
   "closes_before": [
-    3557.4,
-    3555.9,
-    3556.3
+    3622.6,
+    3623.2,
+    3625.3
   ]
 }
